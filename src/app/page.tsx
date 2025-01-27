@@ -9,15 +9,12 @@ export default function BillSplitter() {
   const [personalDishes, setPersonalDishes] = useState([{ name: '', price: '', person: 0 }]);
   const [tax, setTax] = useState(0);
 
-  // Add/remove people
-  const addPerson = () => setPeople([...people, `Person ${people.length + 1}`]);
+  const addPerson = () => setPeople([...people, `Рот ${people.length + 1}`]);
   const removePerson = () => setPeople(people.slice(0, -1));
 
-  // Add dishes
   const addSharedDish = () => setSharedDishes([...sharedDishes, { name: '', price: '' }]);
   const addPersonalDish = () => setPersonalDishes([...personalDishes, { name: '', price: '', person: 0 }]);
 
-  // Calculate totals
   const calculateBill = () => {
     const sharedTotal = sharedDishes.reduce((sum, dish) => sum + (Number(dish.price) || 0), 0);
     const sharedPerPerson = sharedTotal / people.length;
@@ -42,10 +39,8 @@ export default function BillSplitter() {
 
   return (
       <div className="min-h-screen bg-gray-50 p-4">
-        {/* Header */}
         <h1 className="text-2xl font-bold mb-6">Димаш больше не нужен</h1>
 
-        {/* People Section */}
         <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Количество ртов ({people.length})</h2>
@@ -75,7 +70,6 @@ export default function BillSplitter() {
           </div>
         </div>
 
-        {/* Shared Dishes */}
         <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <Users size={20} />
@@ -116,7 +110,6 @@ export default function BillSplitter() {
           </div>
         </div>
 
-        {/* Personal Dishes */}
         <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <User size={20} />
@@ -124,7 +117,7 @@ export default function BillSplitter() {
           </div>
           <div className="space-y-3">
             {personalDishes.map((dish, i) => (
-                <div key={i} className="flex gap-2">
+                <div key={i} className="flex flex-col sm:flex-row gap-2">
                   <input
                       placeholder="Че хавал"
                       value={dish.name}
@@ -135,30 +128,32 @@ export default function BillSplitter() {
                       }}
                       className="flex-1 p-2 rounded-lg bg-gray-50"
                   />
-                  <input
-                      type="number"
-                      placeholder="Цена"
-                      value={dish.price}
-                      onChange={e => {
-                        const newDishes = [...personalDishes];
-                        newDishes[i].price = e.target.value;
-                        setPersonalDishes(newDishes);
-                      }}
-                      className="w-24 p-2 rounded-lg bg-gray-50"
-                  />
-                  <select
-                      value={dish.person}
-                      onChange={e => {
-                        const newDishes = [...personalDishes];
-                        newDishes[i].person = Number(e.target.value);
-                        setPersonalDishes(newDishes);
-                      }}
-                      className="w-32 p-2 rounded-lg bg-gray-50"
-                  >
-                    {people.map((person, i) => (
-                        <option key={i} value={i}>{person}</option>
-                    ))}
-                  </select>
+                  <div className="flex gap-2">
+                    <input
+                        type="number"
+                        placeholder="Цена"
+                        value={dish.price}
+                        onChange={e => {
+                          const newDishes = [...personalDishes];
+                          newDishes[i].price = e.target.value;
+                          setPersonalDishes(newDishes);
+                        }}
+                        className="flex-1 sm:w-24 p-2 rounded-lg bg-gray-50"
+                    />
+                    <select
+                        value={dish.person}
+                        onChange={e => {
+                          const newDishes = [...personalDishes];
+                          newDishes[i].person = Number(e.target.value);
+                          setPersonalDishes(newDishes);
+                        }}
+                        className="flex-1 sm:w-32 p-2 rounded-lg bg-gray-50"
+                    >
+                      {people.map((person, i) => (
+                          <option key={i} value={i}>{person}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
             ))}
             <button
@@ -170,7 +165,6 @@ export default function BillSplitter() {
           </div>
         </div>
 
-        {/* Tax */}
         <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
           <h2 className="text-lg font-semibold mb-4">Обслуживание</h2>
           <div className="relative">
@@ -185,7 +179,6 @@ export default function BillSplitter() {
           </div>
         </div>
 
-        {/* Summary */}
         <div className="bg-white rounded-xl p-4 shadow-sm">
           <h2 className="text-lg font-semibold mb-4">В общем</h2>
           <div className="space-y-3">
