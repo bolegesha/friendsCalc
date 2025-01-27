@@ -1,101 +1,202 @@
-import Image from "next/image";
+// app/page.js
+'use client';
+import { useState } from 'react';
+import { Plus, Minus, DollarSign, Users, User } from 'lucide-react';
 
-export default function Home() {
+export default function BillSplitter() {
+  const [people, setPeople] = useState(['Рот 1', 'Рот 2']);
+  const [sharedDishes, setSharedDishes] = useState([{ name: '', price: '' }]);
+  const [personalDishes, setPersonalDishes] = useState([{ name: '', price: '', person: 0 }]);
+  const [tax, setTax] = useState(0);
+
+  // Add/remove people
+  const addPerson = () => setPeople([...people, `Person ${people.length + 1}`]);
+  const removePerson = () => setPeople(people.slice(0, -1));
+
+  // Add dishes
+  const addSharedDish = () => setSharedDishes([...sharedDishes, { name: '', price: '' }]);
+  const addPersonalDish = () => setPersonalDishes([...personalDishes, { name: '', price: '', person: 0 }]);
+
+  // Calculate totals
+  const calculateBill = () => {
+    const sharedTotal = sharedDishes.reduce((sum, dish) => sum + (Number(dish.price) || 0), 0);
+    const sharedPerPerson = sharedTotal / people.length;
+
+    const personalTotals = people.map((_, index) => {
+      const personalTotal = personalDishes
+          .filter(dish => dish.person === index)
+          .reduce((sum, dish) => sum + (Number(dish.price) || 0), 0);
+
+      const subtotal = sharedPerPerson + personalTotal;
+      const taxAmount = (subtotal * tax) / 100;
+
+      return {
+        subtotal,
+        tax: taxAmount,
+        total: subtotal + taxAmount
+      };
+    });
+
+    return personalTotals;
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+      <div className="min-h-screen bg-gray-50 p-4">
+        {/* Header */}
+        <h1 className="text-2xl font-bold mb-6">Димаш больше не нужен</h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        {/* People Section */}
+        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Количество ртов ({people.length})</h2>
+            <div className="flex gap-2">
+              <button onClick={removePerson} className="p-2 rounded-full bg-red-50 text-red-600">
+                <Minus size={20} />
+              </button>
+              <button onClick={addPerson} className="p-2 rounded-full bg-blue-50 text-blue-600">
+                <Plus size={20} />
+              </button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {people.map((person, i) => (
+                <input
+                    key={i}
+                    type="text"
+                    value={person}
+                    onChange={e => {
+                      const newPeople = [...people];
+                      newPeople[i] = e.target.value;
+                      setPeople(newPeople);
+                    }}
+                    className="w-full p-2 rounded-lg bg-gray-50"
+                />
+            ))}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* Shared Dishes */}
+        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <Users size={20} />
+            <h2 className="text-lg font-semibold">Общак</h2>
+          </div>
+          <div className="space-y-3">
+            {sharedDishes.map((dish, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                      placeholder="Че ест"
+                      value={dish.name}
+                      onChange={e => {
+                        const newDishes = [...sharedDishes];
+                        newDishes[i].name = e.target.value;
+                        setSharedDishes(newDishes);
+                      }}
+                      className="flex-1 p-2 rounded-lg bg-gray-50"
+                  />
+                  <input
+                      type="number"
+                      placeholder="Цена"
+                      value={dish.price}
+                      onChange={e => {
+                        const newDishes = [...sharedDishes];
+                        newDishes[i].price = e.target.value;
+                        setSharedDishes(newDishes);
+                      }}
+                      className="w-24 p-2 rounded-lg bg-gray-50"
+                  />
+                </div>
+            ))}
+            <button
+                onClick={addSharedDish}
+                className="w-full p-2 rounded-lg bg-blue-50 text-blue-600 mt-2"
+            >
+              Еще общак
+            </button>
+          </div>
+        </div>
+
+        {/* Personal Dishes */}
+        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <User size={20} />
+            <h2 className="text-lg font-semibold">Личная жратва</h2>
+          </div>
+          <div className="space-y-3">
+            {personalDishes.map((dish, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                      placeholder="Че хавал"
+                      value={dish.name}
+                      onChange={e => {
+                        const newDishes = [...personalDishes];
+                        newDishes[i].name = e.target.value;
+                        setPersonalDishes(newDishes);
+                      }}
+                      className="flex-1 p-2 rounded-lg bg-gray-50"
+                  />
+                  <input
+                      type="number"
+                      placeholder="Цена"
+                      value={dish.price}
+                      onChange={e => {
+                        const newDishes = [...personalDishes];
+                        newDishes[i].price = e.target.value;
+                        setPersonalDishes(newDishes);
+                      }}
+                      className="w-24 p-2 rounded-lg bg-gray-50"
+                  />
+                  <select
+                      value={dish.person}
+                      onChange={e => {
+                        const newDishes = [...personalDishes];
+                        newDishes[i].person = Number(e.target.value);
+                        setPersonalDishes(newDishes);
+                      }}
+                      className="w-32 p-2 rounded-lg bg-gray-50"
+                  >
+                    {people.map((person, i) => (
+                        <option key={i} value={i}>{person}</option>
+                    ))}
+                  </select>
+                </div>
+            ))}
+            <button
+                onClick={addPersonalDish}
+                className="w-full p-2 rounded-lg bg-blue-50 text-blue-600 mt-2"
+            >
+              Еще похавал
+            </button>
+          </div>
+        </div>
+
+        {/* Tax */}
+        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+          <h2 className="text-lg font-semibold mb-4">Обслуживание</h2>
+          <div className="relative">
+            <input
+                type="number"
+                value={tax}
+                onChange={e => setTax(Number(e.target.value))}
+                className="w-full p-2 rounded-lg bg-gray-50"
+                placeholder="Tax percentage"
+            />
+            <span className="absolute right-4 top-2">%</span>
+          </div>
+        </div>
+
+        {/* Summary */}
+        <div className="bg-white rounded-xl p-4 shadow-sm">
+          <h2 className="text-lg font-semibold mb-4">В общем</h2>
+          <div className="space-y-3">
+            {calculateBill().map((result, i) => (
+                <div key={i} className="flex justify-between p-2 bg-gray-50 rounded-lg">
+                  <span>{people[i]}</span>
+                  <span className="font-semibold">{result.total.toFixed(2)} тг</span>
+                </div>
+            ))}
+          </div>
+        </div>
+      </div>
   );
 }
